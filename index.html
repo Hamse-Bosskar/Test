@@ -16,6 +16,8 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <!-- Tone.js for Romantic Ambient Music -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <!-- Supabase JS Client library CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         .font-serif-wedding {
@@ -69,7 +71,7 @@
                             goldLight: '#E5D3B3',
                             burgundy: '#5C061C',
                             burgundyLight: '#800020',
-                            charcoal: '#2D2D2D'
+                            charcoal: '#000000'
                         }
                     }
                 }
@@ -77,7 +79,7 @@
         }
     </script>
 </head>
-<body class="paper-grain font-sans-wedding text-wedding-charcoal min-h-screen flex flex-col selection:bg-wedding-gold/30 selection:text-wedding-burgundy">
+<body class="paper-grain font-sans-wedding text-black min-h-screen flex flex-col selection:bg-wedding-gold/30 selection:text-wedding-burgundy">
 
     <header class="border-b border-wedding-gold/20 bg-wedding-ivory/95 backdrop-blur-sm sticky top-0 z-40 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
@@ -91,7 +93,13 @@
                 </div>
             </div>
             
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Database Configuration Button -->
+                <button onclick="toggleDbModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-amber-600/30 hover:border-wedding-burgundy text-xs text-amber-800 hover:bg-wedding-burgundy/5 transition-all duration-300">
+                    <i class="fa-solid fa-database text-wedding-gold"></i>
+                    <span class="hidden sm:inline font-medium">Database Settings</span>
+                </button>
+
                 <!-- Tone.js Ambient Audio Button -->
                 <button id="ambientBtn" class="flex items-center gap-2 px-3 py-1.5 rounded-full border border-wedding-gold/40 hover:border-wedding-burgundy text-xs text-wedding-burgundy hover:bg-wedding-burgundy/5 transition-all duration-300" onclick="toggleAmbience()">
                     <i class="fa-solid fa-music text-wedding-gold animate-pulse"></i>
@@ -129,64 +137,72 @@
                     <p class="text-sm text-wedding-charcoal/70 mt-1">Halkan ugu reeb lamaanaha hambalyadaada, ducooyinkaaga & talooyinkaaga xusuusta leh.</p>
                 </div>
 
+                <!-- Active Database connection badge on the form -->
+                <div id="activeDatabaseBadge" class="mb-4 text-center">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-wedding-burgundy/5 border border-wedding-gold/30 text-wedding-burgundy">
+                        <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+                        <span id="activeDbLabel">Checking connection...</span>
+                    </span>
+                </div>
+
                 <!-- Wedding Message Form -->
                 <form id="messageForm" onsubmit="handlePostMessage(event)" class="space-y-6">
                     
                     <!-- Guest Name Field -->
                     <div>
-                        <label for="guestName" class="block text-sm font-medium text-wedding-burgundy mb-1">
+                        <label for="guestName" class="block text-xs font-semibold text-wedding-burgundy mb-1">
                             Magacaaga / Your Name <span class="text-wedding-gold">*</span>
                         </label>
                         <input type="text" id="guestName" required maxlength="50"
-                            class="w-full px-4 py-2.5 rounded-lg border border-wedding-gold/30 bg-wedding-ivory/50 focus:border-wedding-burgundy focus:ring-1 focus:ring-wedding-burgundy outline-none transition-all duration-200"
+                            class="w-full px-4 py-2 rounded-lg border border-wedding-gold/30 bg-wedding-ivory/50 focus:border-wedding-burgundy focus:ring-1 focus:ring-wedding-burgundy outline-none transition-all duration-200 text-xs text-black font-semibold"
                             placeholder="Tusaale: Axmed Cali">
                     </div>
 
                     <!-- Relationship Tagging Grid -->
                     <div>
-                        <label class="block text-sm font-medium text-wedding-burgundy mb-2">
+                        <label class="block text-xs font-semibold text-wedding-burgundy mb-2">
                             Xiriirka Lamaanaha / Relationship <span class="text-wedding-gold">*</span>
                         </label>
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
                             <!-- Relationship Badges Option Buttons -->
-                            <label class="relative flex items-center justify-center py-2.5 px-3 rounded-lg border border-wedding-gold/30 cursor-pointer hover:bg-wedding-gold/5 transition-all text-sm select-none">
+                            <label class="relative flex items-center justify-center py-2 px-3 rounded-lg border border-wedding-gold/30 cursor-pointer hover:bg-wedding-gold/5 transition-all text-xs select-none">
                                 <input type="radio" name="relationship" value="Waalid" class="sr-only" required onchange="updateTagHighlight(this)">
-                                <span class="text-wedding-burgundy font-serif-wedding italic">Waalid (Parent)</span>
+                                <span class="text-wedding-burgundy font-serif-wedding font-semibold italic">Waalid (Parent)</span>
                             </label>
-                            <label class="relative flex items-center justify-center py-2.5 px-3 rounded-lg border border-wedding-gold/30 cursor-pointer hover:bg-wedding-gold/5 transition-all text-sm select-none">
+                            <label class="relative flex items-center justify-center py-2 px-3 rounded-lg border border-wedding-gold/30 cursor-pointer hover:bg-wedding-gold/5 transition-all text-xs select-none">
                                 <input type="radio" name="relationship" value="Walaal" class="sr-only" onchange="updateTagHighlight(this)">
-                                <span class="text-wedding-burgundy font-serif-wedding italic">Walaal (Sibling)</span>
+                                <span class="text-wedding-burgundy font-serif-wedding font-semibold italic">Walaal (Sibling)</span>
                             </label>
-                            <label class="relative flex items-center justify-center py-2.5 px-3 rounded-lg border border-wedding-gold/30 cursor-pointer hover:bg-wedding-gold/5 transition-all text-sm select-none">
+                            <label class="relative flex items-center justify-center py-2 px-3 rounded-lg border border-wedding-gold/30 cursor-pointer hover:bg-wedding-gold/5 transition-all text-xs select-none">
                                 <input type="radio" name="relationship" value="Saaxiib" class="sr-only" onchange="updateTagHighlight(this)">
-                                <span class="text-wedding-burgundy font-serif-wedding italic">Saaxiib (Friend)</span>
+                                <span class="text-wedding-burgundy font-serif-wedding font-semibold italic">Saaxiib (Friend)</span>
                             </label>
-                            <label class="relative flex items-center justify-center py-2.5 px-3 rounded-lg border border-wedding-gold/30 cursor-pointer hover:bg-wedding-gold/5 transition-all text-sm select-none">
+                            <label class="relative flex items-center justify-center py-2 px-3 rounded-lg border border-wedding-gold/30 cursor-pointer hover:bg-wedding-gold/5 transition-all text-xs select-none">
                                 <input type="radio" name="relationship" value="Xiriir" class="sr-only" onchange="updateTagHighlight(this)">
-                                <span class="text-wedding-burgundy font-serif-wedding italic">Ehel (Relative)</span>
+                                <span class="text-wedding-burgundy font-serif-wedding font-semibold italic">Ehel (Relative)</span>
                             </label>
-                            <label class="relative flex items-center justify-center py-2.5 px-3 rounded-lg border border-wedding-gold/30 cursor-pointer hover:bg-wedding-gold/5 transition-all text-sm select-none">
+                            <label class="relative flex items-center justify-center py-2 px-3 rounded-lg border border-wedding-gold/30 cursor-pointer hover:bg-wedding-gold/5 transition-all text-xs select-none">
                                 <input type="radio" name="relationship" value="Macallin" class="sr-only" onchange="updateTagHighlight(this)">
-                                <span class="text-wedding-burgundy font-serif-wedding italic">Macallin (Teacher)</span>
+                                <span class="text-wedding-burgundy font-serif-wedding font-semibold italic">Macallin (Teacher)</span>
                             </label>
-                            <label class="relative flex items-center justify-center py-2.5 px-3 rounded-lg border border-wedding-gold/30 cursor-pointer hover:bg-wedding-gold/5 transition-all text-sm select-none">
+                            <label class="relative flex items-center justify-center py-2 px-3 rounded-lg border border-wedding-gold/30 cursor-pointer hover:bg-wedding-gold/5 transition-all text-xs select-none">
                                 <input type="radio" name="relationship" value="Jaar" class="sr-only" onchange="updateTagHighlight(this)">
-                                <span class="text-wedding-burgundy font-serif-wedding italic">Jaar (Neighbor)</span>
+                                <span class="text-wedding-burgundy font-serif-wedding font-semibold italic">Jaar (Neighbor)</span>
                             </label>
                         </div>
                     </div>
 
                     <!-- Personal Message Text Area -->
                     <div>
-                        <label for="messageBody" class="block text-sm font-medium text-wedding-burgundy mb-1">
+                        <label for="messageBody" class="block text-xs font-semibold text-wedding-burgundy mb-1">
                             Fariintaada Hambalyada / Message <span class="text-wedding-gold">*</span>
                         </label>
                         <textarea id="messageBody" required rows="4" maxlength="500"
-                            class="w-full px-4 py-2.5 rounded-lg border border-wedding-gold/30 bg-wedding-ivory/50 focus:border-wedding-burgundy focus:ring-1 focus:ring-wedding-burgundy outline-none transition-all duration-200 resize-none font-serif-wedding italic text-lg leading-relaxed text-wedding-charcoal"
-                            placeholder="Ku qor halkan hambalyadaada quruxda badan ee ku socota lamaanaha... (M.a, Hambalyo!)"
+                            class="w-full px-4 py-2 rounded-lg border border-wedding-gold/30 bg-wedding-ivory/50 focus:border-wedding-burgundy focus:ring-1 focus:ring-wedding-burgundy outline-none transition-all duration-200 resize-none font-sans-wedding text-xs font-medium text-black"
+                            placeholder="Ku qor halkan hambalyadaada..."
                             oninput="updateCharCount()"></textarea>
                         <div class="flex justify-end mt-1">
-                            <span id="charCount" class="text-xs text-wedding-charcoal/50">0 / 500 ka haray</span>
+                            <span id="charCount" class="text-[10px] font-semibold text-black/60">0 / 500 ka haray</span>
                         </div>
                     </div>
 
@@ -242,7 +258,7 @@
                 <div class="flex items-center gap-2 shrink-0">
                     <div class="relative w-full max-w-[180px]">
                         <input type="text" id="wallSearch" oninput="handleSearch(this.value)" placeholder="Raadi fariin..."
-                            class="w-full pl-8 pr-3 py-1.5 rounded-lg border border-wedding-gold/30 text-xs bg-wedding-ivory focus:border-wedding-burgundy outline-none">
+                            class="w-full pl-8 pr-3 py-1.5 rounded-lg border border-wedding-gold/30 text-xs bg-wedding-ivory text-black font-semibold focus:border-wedding-burgundy outline-none">
                         <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-wedding-gold text-[10px]"></i>
                     </div>
                     <div class="bg-wedding-burgundy/5 border border-wedding-gold/30 px-3 py-1.5 rounded-lg text-xs font-serif-wedding italic font-semibold text-wedding-burgundy">
@@ -258,7 +274,7 @@
                 <div id="loadingState" class="col-span-full py-16 flex flex-col items-center justify-center text-center">
                     <div class="w-12 h-12 border-4 border-wedding-gold border-t-wedding-burgundy rounded-full animate-spin mb-4"></div>
                     <p class="font-serif-wedding italic text-wedding-burgundy text-lg">Soo bandhigaya derbiga hambalyada...</p>
-                    <p class="text-xs text-wedding-charcoal/50 mt-1">Waxaa la isku xirayaa realtime server.</p>
+                    <p class="text-xs text-wedding-charcoal/50 mt-1">Waxaa la isku xirayaa database-ka.</p>
                 </div>
 
                 <!-- Empty State placeholder -->
@@ -273,6 +289,112 @@
         </section>
 
     </main>
+
+    <div id="dbModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-wedding-ivory border-2 border-wedding-gold rounded-2xl max-w-xl w-full p-6 shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh]">
+            <!-- Decorative Flower Design background -->
+            <div class="absolute -top-12 -right-12 w-32 h-32 text-wedding-gold/10 pointer-events-none">
+                <svg class="w-full h-full" viewBox="0 0 100 100" fill="currentColor">
+                    <path d="M50,50 C60,30 80,30 50,0 C20,30 40,30 50,50 Z M50,50 C70,60 70,80 100,50 C70,20 70,40 50,50 Z"/>
+                </svg>
+            </div>
+
+            <!-- Header -->
+            <div class="flex items-center justify-between border-b border-wedding-gold/20 pb-4 mb-4">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-gears text-wedding-burgundy text-xl"></i>
+                    <h3 class="font-serif-wedding text-2xl font-bold text-wedding-burgundy">Database Settings</h3>
+                </div>
+                <button onclick="toggleDbModal()" class="text-wedding-charcoal/50 hover:text-wedding-burgundy text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content (Scrollable) -->
+            <div class="overflow-y-auto pr-2 space-y-6 flex-grow">
+                
+                <!-- DB Provider Selector Tabs -->
+                <div>
+                    <label class="block text-xs font-semibold text-wedding-charcoal/60 uppercase tracking-wider mb-2">Connect to Database:</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="setDbProvider('firebase')" id="btn-provider-firebase" class="py-2.5 px-3 rounded-lg border border-wedding-gold font-medium text-xs text-center transition-all bg-wedding-burgundy text-white">
+                            <i class="fa-solid fa-fire-flame-simple mr-1"></i> Firebase (Auto)
+                        </button>
+                        <button onclick="setDbProvider('supabase')" id="btn-provider-supabase" class="py-2.5 px-3 rounded-lg border border-wedding-gold/30 font-medium text-xs text-center transition-all hover:bg-wedding-gold/10 text-wedding-burgundy">
+                            <i class="fa-solid fa-bolt mr-1 text-emerald-600"></i> Supabase (Custom)
+                        </button>
+                        <button onclick="setDbProvider('local')" id="btn-provider-local" class="py-2.5 px-3 rounded-lg border border-wedding-gold/30 font-medium text-xs text-center transition-all hover:bg-wedding-gold/10 text-wedding-burgundy">
+                            <i class="fa-solid fa-hard-drive mr-1"></i> Sandbox (Local)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Info Banner depending on choice -->
+                <div id="firebase-info-panel" class="bg-[#FCFAF2] border border-wedding-gold/30 rounded-xl p-4 text-xs space-y-2">
+                    <h4 class="font-semibold text-wedding-burgundy"><i class="fa-solid fa-circle-info mr-1"></i> Firebase Realtime sync</h4>
+                    <p class="text-wedding-charcoal/80 leading-relaxed">
+                        By default, the application runs on a shared secure Firebase/Firestore instance dynamically created inside this workspace. This works instantly on mobile and desktop without any manual registration!
+                    </p>
+                </div>
+
+                <div id="supabase-input-panel" class="hidden space-y-4">
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-xs text-emerald-900 leading-relaxed">
+                        <span class="font-semibold text-emerald-800"><i class="fa-solid fa-circle-check mr-1"></i> Perfect for your Wedding!</span>
+                        Connecting to Supabase allows you to manage the wedding message board entirely in your own clean control panel.
+                    </div>
+
+                    <!-- URL input -->
+                    <div>
+                        <label for="sbUrl" class="block text-xs font-medium text-wedding-burgundy mb-1">Supabase URL <span class="text-red-500">*</span></label>
+                        <input type="text" id="sbUrl" class="w-full px-3 py-2 text-xs rounded-lg border border-wedding-gold/30 bg-wedding-ivory focus:border-wedding-burgundy outline-none" placeholder="https://your-project.supabase.co">
+                    </div>
+
+                    <!-- API key input -->
+                    <div>
+                        <label for="sbKey" class="block text-xs font-medium text-wedding-burgundy mb-1">Supabase Anon API Key <span class="text-red-500">*</span></label>
+                        <input type="password" id="sbKey" class="w-full px-3 py-2 text-xs rounded-lg border border-wedding-gold/30 bg-wedding-ivory focus:border-wedding-burgundy outline-none" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+                    </div>
+
+                    <!-- SQL Copy Box -->
+                    <div class="space-y-1">
+                        <label class="block text-xs font-semibold text-wedding-burgundy">Run this SQL Query in your Supabase SQL Editor:</label>
+                        <div class="relative">
+                            <pre class="bg-zinc-900 text-zinc-100 text-[10px] p-3 rounded-lg overflow-x-auto font-mono max-h-40 select-all leading-normal">
+CREATE TABLE messages (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  guest_name text NOT NULL,
+  relationship text NOT NULL,
+  message_body text NOT NULL,
+  loves integer DEFAULT 0,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Enable Realtime for live updates (Optional but highly recommended)
+alter publication supabase_realtime add table messages;</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="local-info-panel" class="hidden bg-gray-50 border border-gray-200 rounded-xl p-4 text-xs space-y-2">
+                    <h4 class="font-semibold text-gray-700"><i class="fa-solid fa-hard-drive mr-1"></i> In-Memory Sandbox</h4>
+                    <p class="text-gray-600 leading-relaxed">
+                        All guest wishes, hearts, and updates will be saved in your active browser session. Great for testing layouts and playing with designs offline.
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="border-t border-wedding-gold/20 pt-4 mt-4 flex justify-end gap-2 shrink-0">
+                <button onclick="toggleDbModal()" class="px-4 py-2 border border-wedding-gold/30 rounded-lg text-xs hover:bg-wedding-gold/10 text-wedding-burgundy">
+                    Cancel
+                </button>
+                <button onclick="saveDbSettings()" class="px-5 py-2 bg-wedding-burgundy text-white rounded-lg text-xs hover:bg-wedding-burgundyLight font-medium shadow-md">
+                    Apply Settings
+                </button>
+            </div>
+        </div>
+    </div>
 
     <div id="customToast" class="fixed bottom-6 right-6 z-50 transform translate-y-12 opacity-0 pointer-events-none transition-all duration-300 max-w-md w-full px-4 sm:px-0">
         <div class="bg-[#FCFAF2] border-2 border-wedding-gold rounded-xl p-4 shadow-xl flex items-start gap-3">
@@ -314,9 +436,9 @@
             <div class="mt-4 flex justify-center gap-4 text-[11px] text-wedding-burgundy font-medium">
                 <span>Ma jiro diiwaangelin loo baahan yahay</span>
                 <span>•</span>
-                <span>Realtime Updates</span>
+                <span>Flexible Databases</span>
                 <span>•</span>
-                <span>Persistent Memory</span>
+                <span>Supabase Supported</span>
             </div>
         </div>
     </footer>
@@ -324,19 +446,27 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, updateDoc, collection, query, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, updateDoc, collection, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Global state and configurations
+        // Configuration identifiers
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'hambalyo-digital-wedding';
+        
+        // Active database handlers
         let db = null;
         let auth = null;
         let user = null;
+        let activeUnsubscribe = null;
+
+        // Supabase client instance holder
+        let supabaseClient = null;
+
+        // App state
+        let currentProvider = 'local'; // 'firebase' | 'supabase' | 'local'
         let allMessages = [];
         let activeFilter = 'all';
         let currentSearchQuery = '';
-        let isFirebaseActive = false;
 
-        // In-memory fallback dataset for smooth initial or offline loading
+        // Default sandbox offline message dataset
         let fallbackMemory = [
             {
                 id: 'mock-1',
@@ -365,63 +495,137 @@
         ];
 
         window.addEventListener('DOMContentLoaded', async () => {
-            let firebaseConfig = null;
-            
-            try {
-                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                    firebaseConfig = JSON.parse(__firebase_config);
-                }
-            } catch (e) {
-                console.warn("Failed to parse firebase config, using offline emulation instead", e);
-            }
+            // Load custom settings from Local Storage if present
+            const savedProvider = localStorage.getItem('hambalyo_db_provider');
+            const savedSbUrl = localStorage.getItem('hambalyo_sb_url');
+            const savedSbKey = localStorage.getItem('hambalyo_sb_key');
 
-            if (firebaseConfig) {
-                try {
-                    const app = initializeApp(firebaseConfig);
-                    db = getFirestore(app);
-                    auth = getAuth(app);
+            if (savedSbUrl) document.getElementById('sbUrl').value = savedSbUrl;
+            if (savedSbKey) document.getElementById('sbKey').value = savedSbKey;
 
-                    // Authentication Step (Rule 3)
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        const cred = await signInWithCustomToken(auth, __initial_auth_token);
-                        user = cred.user;
-                    } else {
-                        const cred = await signInAnonymously(auth);
-                        user = cred.user;
-                    }
-
-                    if (user) {
-                        isFirebaseActive = true;
-                        showNotification("Way guuleysatay!", "Waa laguu xiriiriyay server-ka hambalyada.", "fa-solid fa-wifi text-emerald-600");
-                        listenForMessages();
-                    } else {
-                        throw new Error("Unable to establish anonymous session.");
-                    }
-                } catch (err) {
-                    console.error("Firestore connection failed. Running on elegant Offline Emulation.", err);
-                    runFallbackSimulation();
-                }
+            // Determine initial provider to spin up
+            if (savedProvider === 'supabase' && savedSbUrl && savedSbKey) {
+                initDatabaseConnection('supabase');
             } else {
-                console.log("No Firebase configurations provided. Utilizing local in-memory storage.");
-                runFallbackSimulation();
+                // Default to Firebase if config present, otherwise use local fallback
+                let hasFirebaseConfig = false;
+                try {
+                    if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                        hasFirebaseConfig = true;
+                    }
+                } catch (e) {}
+
+                if (hasFirebaseConfig) {
+                    initDatabaseConnection('firebase');
+                } else {
+                    initDatabaseConnection('local');
+                }
             }
 
-            // Expose triggers globally
+            // Expose UI triggers globally
             window.handlePostMessage = handlePostMessage;
             window.filterWall = filterWall;
             window.handleSearch = handleSearch;
             window.likeMessage = likeMessage;
             window.dismissToast = dismissToast;
+            window.toggleDbModal = toggleDbModal;
+            window.setDbProvider = setDbProvider;
+            window.saveDbSettings = saveDbSettings;
         });
 
-        function listenForMessages() {
-            if (!isFirebaseActive || !user) return;
-
-            // Rule 1: Strict paths for public collaborative data
-            const messagesColRef = collection(db, 'artifacts', appId, 'public', 'data', 'messages');
+        async function initDatabaseConnection(provider) {
+            currentProvider = provider;
             
-            // Rule 2: Fetch all data without complex where() / orderBy() query, then filter/sort in JS memory
-            onSnapshot(messagesColRef, (snapshot) => {
+            // Clean up old listeners
+            if (activeUnsubscribe) {
+                activeUnsubscribe();
+                activeUnsubscribe = null;
+            }
+
+            const dbLabel = document.getElementById('activeDbLabel');
+
+            if (provider === 'firebase') {
+                dbLabel.textContent = "Connecting to Firebase...";
+                let firebaseConfig = null;
+                try {
+                    if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                        firebaseConfig = JSON.parse(__firebase_config);
+                    }
+                } catch(e) {}
+
+                if (firebaseConfig) {
+                    try {
+                        const app = initializeApp(firebaseConfig);
+                        db = getFirestore(app);
+                        auth = getAuth(app);
+
+                        // Auth sequence
+                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                            const cred = await signInWithCustomToken(auth, __initial_auth_token);
+                            user = cred.user;
+                        } else {
+                            const cred = await signInAnonymously(auth);
+                            user = cred.user;
+                        }
+
+                        if (user) {
+                            dbLabel.textContent = "Firebase Active";
+                            showNotification("Firebase Connected!", "Way guuleysatay! Waa laguu xiriiriyay server-ka hambalyada.", "fa-solid fa-wifi text-emerald-600");
+                            listenToFirebase();
+                        } else {
+                            throw new Error("Unable to establish anonymous session.");
+                        }
+                    } catch (err) {
+                        console.error("Firebase startup failed. Falling back to local.", err);
+                        initDatabaseConnection('local');
+                    }
+                } else {
+                    initDatabaseConnection('local');
+                }
+            } 
+            else if (provider === 'supabase') {
+                dbLabel.textContent = "Connecting to Supabase...";
+                const url = document.getElementById('sbUrl').value.trim();
+                const key = document.getElementById('sbKey').value.trim();
+
+                if (!url || !key) {
+                    showNotification("Xog Yaroo Maqan", "Fadlan buuxi Supabase URL iyo Key si aad u xirto.", "fa-solid fa-triangle-exclamation text-amber-500");
+                    initDatabaseConnection('local');
+                    return;
+                }
+
+                try {
+                    // Check if supabase object exists via window
+                    if (!window.supabase) {
+                        throw new Error("Supabase library not loaded from CDN yet.");
+                    }
+                    supabaseClient = window.supabase.createClient(url, key);
+
+                    dbLabel.textContent = "Supabase Active";
+                    showNotification("Supabase Connected!", "Hambalyo! Database-kaaga Supabase waa uu diyaarsan yahay.", "fa-solid fa-bolt text-emerald-500");
+                    
+                    // Fetch initially and start polling / realtime channel
+                    fetchSupabaseMessages();
+                    listenToSupabaseRealtime();
+                } catch (err) {
+                    console.error("Supabase connection failed:", err);
+                    showNotification("Cillad Supabase", "Lama xiriiri karo Supabase. Hubi URL iyo Key-ga aad gelisay.", "fa-solid fa-circle-xmark text-red-500");
+                    initDatabaseConnection('local');
+                }
+            } 
+            else {
+                // Local memory sandbox
+                dbLabel.textContent = "Sandbox / Offline Mode";
+                allMessages = [...fallbackMemory].sort((a, b) => b.createdAt - a.createdAt);
+                renderMessages();
+            }
+        }
+
+        function listenToFirebase() {
+            if (currentProvider !== 'firebase' || !db) return;
+            const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'messages');
+            
+            activeUnsubscribe = onSnapshot(colRef, (snapshot) => {
                 const fetched = [];
                 snapshot.forEach(doc => {
                     const data = doc.data();
@@ -431,22 +635,62 @@
                     });
                 });
                 
-                // Sort in memory (Rule 2 requirement)
                 fetched.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
                 allMessages = fetched;
-                
                 renderMessages();
             }, (error) => {
-                console.error("Error in Firebase snapshot updates:", error);
-                showNotification("Cillad Server", "Fariimaha si toos ah looma cusboonaysiin karo haatan.", "fa-solid fa-triangle-exclamation text-amber-500");
+                console.error("Firebase live sync error:", error);
             });
         }
 
-        function runFallbackSimulation() {
-            isFirebaseActive = false;
-            allMessages = [...fallbackMemory].sort((a, b) => b.createdAt - a.createdAt);
-            renderMessages();
-            showNotification("Hab-Madaxbannaan", "Waxaad ku jirtaa habka offline-ka. Fariimaha halkan ayay ku kaydsanaan doonaan nolosha kulanka hadda.", "fa-solid fa-circle-info text-amber-600");
+        async function fetchSupabaseMessages() {
+            if (currentProvider !== 'supabase' || !supabaseClient) return;
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('messages')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                // Map Supabase postgres schema keys back to UI standard properties
+                allMessages = data.map(item => ({
+                    id: item.id,
+                    guestName: item.guest_name,
+                    relationship: item.relationship,
+                    messageBody: item.message_body,
+                    loves: item.loves || 0,
+                    createdAt: new Date(item.created_at).getTime()
+                }));
+
+                renderMessages();
+            } catch (err) {
+                console.error("Supabase load error:", err);
+                showNotification("Read Error", "Lama aqrin karo fariimaha Supabase. Hubi in jadwalka 'messages' uu jiro.", "fa-solid fa-triangle-exclamation text-amber-500");
+            }
+        }
+
+        function listenToSupabaseRealtime() {
+            if (currentProvider !== 'supabase' || !supabaseClient) return;
+
+            // Subscribe to table changes
+            const channel = supabaseClient
+                .channel('schema-db-changes')
+                .on(
+                    'postgres_changes',
+                    { event: '*', schema: 'public', table: 'messages' },
+                    (payload) => {
+                        console.log('Realtime change received from Supabase:', payload);
+                        fetchSupabaseMessages();
+                    }
+                )
+                .subscribe();
+
+            // Store unsubscribe hook
+            activeUnsubscribe = () => {
+                supabaseClient.removeChannel(channel);
+            };
         }
 
         async function handlePostMessage(event) {
@@ -469,37 +713,49 @@
                 createdAt: Date.now()
             };
 
-            // Disable submit button temporarily
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
             submitBtn.classList.add('opacity-75');
 
             try {
-                if (isFirebaseActive && user) {
-                    // Strict Paths: RULE 1
+                if (currentProvider === 'firebase' && db && user) {
                     const newMessageDocRef = doc(collection(db, 'artifacts', appId, 'public', 'data', 'messages'));
                     await setDoc(newMessageDocRef, payload);
-                } else {
-                    // Fallback to memory
+                } 
+                else if (currentProvider === 'supabase' && supabaseClient) {
+                    const { error } = await supabaseClient
+                        .from('messages')
+                        .insert([{
+                            guest_name: payload.guestName,
+                            relationship: payload.relationship,
+                            message_body: payload.messageBody,
+                            loves: payload.loves,
+                            created_at: new Date(payload.createdAt).toISOString()
+                        }]);
+
+                    if (error) throw error;
+                    // Re-trigger fetch manual safety if realtime latency exists
+                    await fetchSupabaseMessages();
+                } 
+                else {
+                    // Sandbox / Local Emulation
                     const mockId = 'local-' + Date.now();
                     payload.id = mockId;
                     allMessages.unshift(payload);
                     renderMessages();
                 }
 
-                // Sparkle animation
+                // Celebrate new wishes
                 triggerConfetti();
-
-                // Custom celebratory sound
                 playChimeSound();
-
                 showNotification("Hambalyo Waa La Diray!", "Fariintaada waa lagu daray derbiga guud.", "fa-solid fa-wand-magic-sparkles text-wedding-gold");
 
                 // Clear input form
                 nameInput.value = '';
                 messageInput.value = '';
                 if (relInput) relInput.checked = false;
-                // Reset styling borders
+                
+                // Reset custom tagging highlight visual styles
                 document.querySelectorAll('input[name="relationship"]').forEach(radio => {
                     radio.parentElement.classList.remove('bg-wedding-burgundy', 'text-white', 'border-wedding-burgundy');
                     radio.parentElement.classList.add('border-wedding-gold/30');
@@ -509,7 +765,7 @@
                 document.getElementById('charCount').textContent = "0 / 500 ka haray";
 
             } catch (err) {
-                console.error("Posting message error:", err);
+                console.error("Posting error:", err);
                 showNotification("Cillad Diris", "Fariinta lama gudbin karo fadlan mar kale isku day.", "fa-solid fa-circle-xmark text-red-600");
             } finally {
                 submitBtn.disabled = false;
@@ -518,27 +774,48 @@
         }
 
         async function likeMessage(id) {
-            // Visual micro-pop for target heart
             const heartIcon = document.getElementById(`heart-icon-${id}`);
             const countSpan = document.getElementById(`heart-count-${id}`);
+            
             if (heartIcon) {
                 heartIcon.classList.add('scale-150', 'text-red-600');
                 setTimeout(() => heartIcon.classList.remove('scale-150'), 200);
             }
 
             try {
-                if (isFirebaseActive && user) {
-                    // Transactional safety increment (RULE 1 Path)
+                if (currentProvider === 'firebase' && db && user) {
                     const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'messages', id);
                     await runTransaction(db, async (transaction) => {
                         const sfDoc = await transaction.get(docRef);
-                        if (!sfDoc.exists()) {
-                            throw "Document does not exist!";
-                        }
+                        if (!sfDoc.exists()) throw "No document";
                         const newLoves = (sfDoc.data().loves || 0) + 1;
                         transaction.update(docRef, { loves: newLoves });
                     });
-                } else {
+                } 
+                else if (currentProvider === 'supabase' && supabaseClient) {
+                    // Fetch existing count
+                    const { data: fetchResult, error: fetchErr } = await supabaseClient
+                        .from('messages')
+                        .select('loves')
+                        .eq('id', id)
+                        .single();
+
+                    if (fetchErr) throw fetchErr;
+
+                    const updatedLoves = (fetchResult.loves || 0) + 1;
+
+                    // Update count
+                    const { error: updateErr } = await supabaseClient
+                        .from('messages')
+                        .update({ loves: updatedLoves })
+                        .eq('id', id);
+
+                    if (updateErr) throw updateErr;
+                    
+                    // Instant local rendering update for latency-free feel
+                    if (countSpan) countSpan.textContent = updatedLoves;
+                } 
+                else {
                     const found = allMessages.find(m => m.id === id);
                     if (found) {
                         found.loves = (found.loves || 0) + 1;
@@ -547,14 +824,13 @@
                 }
                 playClickSpark();
             } catch (err) {
-                console.error("Liking failed:", err);
+                console.error("Reaction failed:", err);
             }
         }
 
         function filterWall(relationship) {
             activeFilter = relationship;
             
-            // Adjust active CSS states of tags
             const buttons = document.querySelectorAll('.filter-btn');
             buttons.forEach(btn => {
                 btn.classList.remove('active-filter', 'bg-wedding-burgundy', 'text-white');
@@ -562,7 +838,6 @@
                 btn.removeAttribute('style');
             });
 
-            // Set current target
             event.target.classList.add('active-filter', 'bg-wedding-burgundy', 'text-white');
             event.target.classList.remove('border-wedding-gold/30', 'text-wedding-burgundy');
 
@@ -581,7 +856,6 @@
 
             if (loading) loading.classList.add('hidden');
 
-            // Apply both tags and query matching
             const filtered = allMessages.filter(msg => {
                 const matchesTag = (activeFilter === 'all' || msg.relationship === activeFilter);
                 const matchesSearch = (
@@ -591,10 +865,8 @@
                 return matchesTag && matchesSearch;
             });
 
-            // Update Counter UI
             document.getElementById('messageCounter').textContent = filtered.length;
 
-            // Remove previous dynamically-created cards safely
             const cards = container.querySelectorAll('.message-card');
             cards.forEach(card => card.remove());
 
@@ -606,11 +878,9 @@
             }
 
             filtered.forEach(msg => {
-                // Generate elegant dynamic stationery card element
                 const cardDiv = document.createElement('div');
                 cardDiv.className = `message-card card-stationery rounded-xl border border-wedding-gold/25 p-5 relative overflow-hidden transition-all duration-300 transform hover:-translate-y-1 hover:shadow-md flex flex-col justify-between`;
                 
-                // Set relationship tag style
                 const tagColorMap = {
                     'Waalid': 'border-rose-400 bg-rose-50/50 text-rose-700',
                     'Walaal': 'border-purple-300 bg-purple-50/50 text-purple-700',
@@ -621,46 +891,36 @@
                 };
                 const badgeClass = tagColorMap[msg.relationship] || 'border-wedding-gold bg-wedding-ivory text-wedding-burgundy';
 
-                // Display dynamic beautiful corner leaves inside each card
                 cardDiv.innerHTML = `
                     <div>
-                        <!-- Stationery Floral Corner Element -->
                         <div class="absolute top-0 right-0 w-8 h-8 opacity-10 pointer-events-none">
                             <svg class="w-full h-full text-wedding-gold" viewBox="0 0 100 100" fill="currentColor">
                                 <path d="M100,0 L100,50 C80,40 60,40 50,0 Z"/>
                             </svg>
                         </div>
-
-                        <!-- Top row info -->
                         <div class="flex items-center justify-between mb-3.5">
-                            <span class="text-[10px] tracking-wider uppercase font-medium text-wedding-charcoal/40 font-sans-wedding">
+                            <span class="text-[10px] tracking-wider uppercase font-bold text-black/60 font-sans-wedding">
                                 ${formatRelativeTime(msg.createdAt)}
                             </span>
                             <span class="px-2.5 py-0.5 rounded-full border ${badgeClass} text-[10px] font-serif-wedding font-semibold tracking-wide shadow-sm">
                                 ${msg.relationship}
                             </span>
                         </div>
-
-                        <!-- Message Body with delicate quotation decoration -->
-                        <p class="font-serif-wedding italic text-wedding-charcoal text-lg leading-relaxed mb-4 relative z-10 pl-2">
+                        <p class="font-sans-wedding text-black text-[13px] font-medium leading-relaxed mb-4 relative z-10 pl-2">
                             "${escapeHTML(msg.messageBody)}"
                         </p>
                     </div>
-
-                    <!-- Card Footer (Sender name & Like actions) -->
                     <div class="border-t border-wedding-gold/10 pt-3 flex items-center justify-between relative z-10">
                         <div class="flex flex-col">
-                            <span class="font-serif-wedding text-wedding-burgundy font-bold italic text-md leading-none">
+                            <span class="font-sans-wedding text-black font-bold text-xs leading-none">
                                 — ${escapeHTML(msg.guestName)}
                             </span>
-                            <span class="text-[9px] text-wedding-charcoal/40 mt-1 uppercase font-semibold">Qoraaga Hambalyada</span>
+                            <span class="text-[9px] text-black/50 mt-1 uppercase font-bold">Qoraaga Hambalyada</span>
                         </div>
-
-                        <!-- Love Heart Reactions Trigger -->
                         <button onclick="likeMessage('${msg.id}')" 
-                                class="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-rose-100 hover:border-rose-300 bg-rose-50/20 hover:bg-rose-50/60 transition-all text-rose-600 text-xs shadow-sm">
+                                class="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-rose-200 hover:border-rose-400 bg-rose-50/20 hover:bg-rose-50/60 transition-all text-rose-700 text-[11px] shadow-sm font-semibold">
                             <i id="heart-icon-${msg.id}" class="fa-solid fa-heart transition-transform"></i>
-                            <span id="heart-count-${msg.id}" class="font-sans-wedding font-semibold">${msg.loves || 0}</span>
+                            <span id="heart-count-${msg.id}" class="font-sans-wedding">${msg.loves || 0}</span>
                         </button>
                     </div>
                 `;
@@ -695,9 +955,66 @@
                     origin: { y: 0.65 },
                     colors: ['#D4AF37', '#5C061C', '#E5D3B3', '#800020']
                 });
-            } catch (err) {
-                console.warn("Confetti call bypassed:", err);
+            } catch (err) {}
+        }
+
+        let selectedConfigProvider = 'local';
+
+        function toggleDbModal() {
+            const modal = document.getElementById('dbModal');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                // Select active tab on opening
+                setDbProvider(currentProvider);
+            } else {
+                modal.classList.add('hidden');
             }
+        }
+
+        function setDbProvider(provider) {
+            selectedConfigProvider = provider;
+            
+            // Toggle visual tab highlights
+            const providers = ['firebase', 'supabase', 'local'];
+            providers.forEach(p => {
+                const btn = document.getElementById(`btn-provider-${p}`);
+                if (p === provider) {
+                    btn.className = "py-2.5 px-3 rounded-lg border border-wedding-gold font-medium text-xs text-center transition-all bg-wedding-burgundy text-white";
+                } else {
+                    btn.className = "py-2.5 px-3 rounded-lg border border-wedding-gold/30 font-medium text-xs text-center transition-all hover:bg-wedding-gold/10 text-wedding-burgundy";
+                }
+            });
+
+            // Toggle active detail panels
+            document.getElementById('firebase-info-panel').classList.add('hidden');
+            document.getElementById('supabase-input-panel').classList.add('hidden');
+            document.getElementById('local-info-panel').classList.add('hidden');
+
+            if (provider === 'firebase') {
+                document.getElementById('firebase-info-panel').classList.remove('hidden');
+            } else if (provider === 'supabase') {
+                document.getElementById('supabase-input-panel').classList.remove('hidden');
+            } else {
+                document.getElementById('local-info-panel').classList.remove('hidden');
+            }
+        }
+
+        function saveDbSettings() {
+            const url = document.getElementById('sbUrl').value.trim();
+            const key = document.getElementById('sbKey').value.trim();
+
+            if (selectedConfigProvider === 'supabase') {
+                if (!url || !key) {
+                    showNotification("Xog Yaroo Maqan", "Fadlan buuxi Supabase URL iyo Anon Key si aad u xirto.", "fa-solid fa-triangle-exclamation text-amber-500");
+                    return;
+                }
+                localStorage.setItem('hambalyo_sb_url', url);
+                localStorage.setItem('hambalyo_sb_key', key);
+            }
+
+            localStorage.setItem('hambalyo_db_provider', selectedConfigProvider);
+            toggleDbModal();
+            initDatabaseConnection(selectedConfigProvider);
         }
     </script>
 
@@ -708,9 +1025,7 @@
         let delayEffect = null;
         let reverbEffect = null;
 
-        // Custom highlight indicator for relationship badges
         function updateTagHighlight(radioInput) {
-            // Reset others
             document.querySelectorAll('input[name="relationship"]').forEach(radio => {
                 radio.parentElement.classList.remove('bg-wedding-burgundy', 'text-white', 'border-wedding-burgundy');
                 radio.parentElement.classList.add('border-wedding-gold/30');
@@ -718,7 +1033,6 @@
                 radio.parentElement.querySelector('span').classList.add('text-wedding-burgundy');
             });
 
-            // Highlight selected
             if (radioInput.checked) {
                 radioInput.parentElement.classList.remove('border-wedding-gold/30');
                 radioInput.parentElement.classList.add('bg-wedding-burgundy', 'border-wedding-burgundy');
@@ -727,31 +1041,26 @@
             }
         }
 
-        // Character counter tracking
         function updateCharCount() {
             const textarea = document.getElementById('messageBody');
             const counter = document.getElementById('charCount');
-            const length = textarea.value.length;
-            counter.textContent = `${length} / 500 ka haray`;
+            counter.textContent = `${textarea.value.length} / 500 ka haray`;
         }
 
         async function toggleAmbience() {
             const btnText = document.getElementById('ambientText');
             const btnIcon = document.querySelector('#ambientBtn i');
 
-            // Audio Context Activation Safeguard
             if (Tone.context.state !== 'running') {
                 await Tone.start();
             }
 
             if (isAudioPlaying) {
-                // Pause Ambience
                 Tone.Transport.stop();
                 btnText.textContent = "Muusig Shid (Play Ambience)";
                 btnIcon.className = "fa-solid fa-music text-wedding-gold";
                 isAudioPlaying = false;
             } else {
-                // Start Procedural Synthesis
                 initializeWeddingMusic();
                 Tone.Transport.start();
                 btnText.textContent = "Jooji Muusigga (Stop)";
@@ -761,17 +1070,13 @@
         }
 
         function initializeWeddingMusic() {
-            if (polySynth) return; // Prevent double creation
+            if (polySynth) return;
 
-            // Warm delay and deep soft space reverb for romantic atmosphere
             delayEffect = new Tone.FeedbackDelay("4n.", 0.5).toDestination();
             reverbEffect = new Tone.Reverb({ roomSize: 0.8, wet: 0.4 }).toDestination();
 
-            // Create sweet synthesizer approximating warm vintage piano/harp
             polySynth = new Tone.PolySynth(Tone.Synth, {
-                oscillator: {
-                    type: "triangle"
-                },
+                oscillator: { type: "triangle" },
                 envelope: {
                     attack: 0.15,
                     decay: 0.8,
@@ -780,10 +1085,8 @@
                 }
             }).chain(delayEffect, reverbEffect);
 
-            // Soft master volume limiting
             polySynth.volume.value = -12;
 
-            // Beautiful romantic key harmonic loops (C Major / A Minor celestial pentatonic)
             const chords = [
                 ["C4", "E4", "G4", "B4"],  // Cmaj7
                 ["A3", "C4", "E4", "G4"],  // Am7
@@ -793,21 +1096,15 @@
             
             let chordIndex = 0;
 
-            // Sequence to play gentle arpeggios
             ambientLoopId = Tone.Transport.scheduleRepeat((time) => {
                 const currentChord = chords[chordIndex];
-                
-                // Play chord gently across the bar
                 currentChord.forEach((note, i) => {
-                    const offset = i * 0.25; // elegant arpeggiation delay
-                    polySynth.triggerAttackRelease(note, "2n", time + offset);
+                    polySynth.triggerAttackRelease(note, "2n", time + (i * 0.25));
                 });
-
                 chordIndex = (chordIndex + 1) % chords.length;
             }, "4m");
         }
 
-        // Beautiful sparkling chime trigger upon message submit
         function playChimeSound() {
             if (!polySynth) return;
             const now = Tone.now();
@@ -817,7 +1114,6 @@
             polySynth.triggerAttackRelease("C6", "4n", now + 0.3);
         }
 
-        // Tiny touch click sound for Reacting
         function playClickSpark() {
             if (!polySynth) return;
             polySynth.triggerAttackRelease("G5", "16n", Tone.now());
@@ -827,24 +1123,15 @@
 
         function showNotification(title, message, iconClass = "fa-solid fa-bell text-wedding-gold") {
             const toast = document.getElementById('customToast');
-            const tTitle = document.getElementById('toastTitle');
-            const tMsg = document.getElementById('toastMsg');
-            const tIcon = document.getElementById('toastIcon');
+            document.getElementById('toastTitle').textContent = title;
+            document.getElementById('toastMsg').textContent = message;
+            document.getElementById('toastIcon').className = iconClass;
 
-            // Apply fields
-            tTitle.textContent = title;
-            tMsg.textContent = message;
-            tIcon.className = iconClass;
-
-            // Reveal slide transition
             toast.classList.remove('translate-y-12', 'opacity-0', 'pointer-events-none');
             toast.classList.add('translate-y-0', 'opacity-100');
 
             if (toastTimeout) clearTimeout(toastTimeout);
-            
-            toastTimeout = setTimeout(() => {
-                dismissToast();
-            }, 6000);
+            toastTimeout = setTimeout(() => dismissToast(), 6000);
         }
 
         function dismissToast() {
