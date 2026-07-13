@@ -1,12 +1,857 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="so" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soltelco Compnay</title>
+    <title>Hambalyo - Wedding Message Wall</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for Editorial & Clean Aesthetics -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Elegant Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Tone.js for Romantic Ambient Music -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <style>
+        .font-serif-wedding {
+            font-family: 'Cormorant Garamond', serif;
+        }
+        .font-sans-wedding {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom Elegant Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FDFBF7;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #C5A059;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #5C061C;
+        }
+        /* Custom Background Pattern resembling high-quality wedding stationary */
+        .paper-grain {
+            background-color: #FDFBF7;
+            background-image: radial-gradient(#C5A059 0.5px, transparent 0.5px), radial-gradient(#C5A059 0.5px, #FDFBF7 0.5px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            background-opacity: 0.05;
+        }
+        .card-stationery {
+            background: linear-gradient(135deg, #FCFAF2 0%, #FAF6E9 100%);
+            box-shadow: 0 4px 20px -2px rgba(92, 6, 28, 0.08);
+            border: 1px solid rgba(197, 160, 89, 0.3);
+        }
+        .card-stationery:hover {
+            border-color: rgba(92, 6, 28, 0.3);
+            box-shadow: 0 10px 25px -5px rgba(92, 6, 28, 0.12);
+        }
+    </style>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        wedding: {
+                            ivory: '#FDFBF7',
+                            stationery: '#FCFAF2',
+                            gold: '#D4AF37',
+                            goldLight: '#E5D3B3',
+                            burgundy: '#5C061C',
+                            burgundyLight: '#800020',
+                            charcoal: '#2D2D2D'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
-    <h1>Employee Portal</h1>
-    <h2>WElcome</h2>
+<body class="paper-grain font-sans-wedding text-wedding-charcoal min-h-screen flex flex-col selection:bg-wedding-gold/30 selection:text-wedding-burgundy">
+
+    <header class="border-b border-wedding-gold/20 bg-wedding-ivory/95 backdrop-blur-sm sticky top-0 z-40 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full border border-wedding-gold flex items-center justify-center bg-wedding-burgundy text-wedding-gold shadow-sm">
+                    <span class="font-serif-wedding text-xl font-bold italic">H</span>
+                </div>
+                <div>
+                    <h1 class="font-serif-wedding text-2xl sm:text-3xl font-bold tracking-wide text-wedding-burgundy">Hambalyo</h1>
+                    <p class="text-xs tracking-wider uppercase text-wedding-gold font-medium">Digital Wedding Message Wall</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <!-- Tone.js Ambient Audio Button -->
+                <button id="ambientBtn" class="flex items-center gap-2 px-3 py-1.5 rounded-full border border-wedding-gold/40 hover:border-wedding-burgundy text-xs text-wedding-burgundy hover:bg-wedding-burgundy/5 transition-all duration-300" onclick="toggleAmbience()">
+                    <i class="fa-solid fa-music text-wedding-gold animate-pulse"></i>
+                    <span id="ambientText" class="font-medium">Muusig Shid (Play Ambience)</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
+        
+        <!-- Left Side: RSVP/Message Form Stationery Card -->
+        <section class="w-full lg:w-5/12 shrink-0">
+            <div class="sticky top-28 bg-[#FCFAF2] rounded-2xl border-2 border-wedding-gold/30 p-6 sm:p-8 shadow-md relative overflow-hidden">
+                <!-- Decorative SVG Foil Corner Designs -->
+                <div class="absolute top-0 left-0 w-16 h-16 pointer-events-none opacity-40">
+                    <svg class="w-full h-full text-wedding-gold" viewBox="0 0 100 100" fill="currentColor">
+                        <path d="M0,0 L0,30 C15,30 30,15 30,0 Z"/>
+                        <path d="M0,0 L10,0 C10,5 5,10 0,10 Z"/>
+                        <circle cx="20" cy="20" r="2"/>
+                    </svg>
+                </div>
+                <div class="absolute top-0 right-0 w-16 h-16 pointer-events-none opacity-40 rotate-90">
+                    <svg class="w-full h-full text-wedding-gold" viewBox="0 0 100 100" fill="currentColor">
+                        <path d="M0,0 L0,30 C15,30 30,15 30,0 Z"/>
+                        <path d="M0,0 L10,0 C10,5 5,10 0,10 Z"/>
+                        <circle cx="20" cy="20" r="2"/>
+                    </svg>
+                </div>
+
+                <!-- Form Header -->
+                <div class="text-center mb-8 pt-4">
+                    <span class="font-serif-wedding italic text-wedding-gold text-lg tracking-wider block mb-1">Farxadda Nala Qaybso</span>
+                    <h2 class="font-serif-wedding text-3xl font-semibold text-wedding-burgundy">Reeb Fariintaada</h2>
+                    <p class="text-sm text-wedding-charcoal/70 mt-1">Halkan ugu reeb lamaanaha hambalyadaada, ducooyinkaaga & talooyinkaaga xusuusta leh.</p>
+                </div>
+
+                <!-- Wedding Message Form -->
+                <form id="messageForm" onsubmit="handlePostMessage(event)" class="space-y-6">
+                    
+                    <!-- Guest Name Field -->
+                    <div>
+                        <label for="guestName" class="block text-sm font-medium text-wedding-burgundy mb-1">
+                            Magacaaga / Your Name <span class="text-wedding-gold">*</span>
+                        </label>
+                        <input type="text" id="guestName" required maxlength="50"
+                            class="w-full px-4 py-2.5 rounded-lg border border-wedding-gold/30 bg-wedding-ivory/50 focus:border-wedding-burgundy focus:ring-1 focus:ring-wedding-burgundy outline-none transition-all duration-200"
+                            placeholder="Tusaale: Axmed Cali">
+                    </div>
+
+                    <!-- Relationship Tagging Grid -->
+                    <div>
+                        <label class="block text-sm font-medium text-wedding-burgundy mb-2">
+                            Xiriirka Lamaanaha / Relationship <span class="text-wedding-gold">*</span>
+                        </label>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            <!-- Relationship Badges Option Buttons -->
+                            <label class="relative flex items-center justify-center py-2.5 px-3 rounded-lg border border-wedding-gold/30 cursor-pointer hover:bg-wedding-gold/5 transition-all text-sm select-none">
+                                <input type="radio" name="relationship" value="Waalid" class="sr-only" required onchange="updateTagHighlight(this)">
+                                <span class="text-wedding-burgundy font-serif-wedding italic">Waalid (Parent)</span>
+                            </label>
+                            <label class="relative flex items-center justify-center py-2.5 px-3 rounded-lg border border-wedding-gold/30 cursor-pointer hover:bg-wedding-gold/5 transition-all text-sm select-none">
+                                <input type="radio" name="relationship" value="Walaal" class="sr-only" onchange="updateTagHighlight(this)">
+                                <span class="text-wedding-burgundy font-serif-wedding italic">Walaal (Sibling)</span>
+                            </label>
+                            <label class="relative flex items-center justify-center py-2.5 px-3 rounded-lg border border-wedding-gold/30 cursor-pointer hover:bg-wedding-gold/5 transition-all text-sm select-none">
+                                <input type="radio" name="relationship" value="Saaxiib" class="sr-only" onchange="updateTagHighlight(this)">
+                                <span class="text-wedding-burgundy font-serif-wedding italic">Saaxiib (Friend)</span>
+                            </label>
+                            <label class="relative flex items-center justify-center py-2.5 px-3 rounded-lg border border-wedding-gold/30 cursor-pointer hover:bg-wedding-gold/5 transition-all text-sm select-none">
+                                <input type="radio" name="relationship" value="Xiriir" class="sr-only" onchange="updateTagHighlight(this)">
+                                <span class="text-wedding-burgundy font-serif-wedding italic">Ehel (Relative)</span>
+                            </label>
+                            <label class="relative flex items-center justify-center py-2.5 px-3 rounded-lg border border-wedding-gold/30 cursor-pointer hover:bg-wedding-gold/5 transition-all text-sm select-none">
+                                <input type="radio" name="relationship" value="Macallin" class="sr-only" onchange="updateTagHighlight(this)">
+                                <span class="text-wedding-burgundy font-serif-wedding italic">Macallin (Teacher)</span>
+                            </label>
+                            <label class="relative flex items-center justify-center py-2.5 px-3 rounded-lg border border-wedding-gold/30 cursor-pointer hover:bg-wedding-gold/5 transition-all text-sm select-none">
+                                <input type="radio" name="relationship" value="Jaar" class="sr-only" onchange="updateTagHighlight(this)">
+                                <span class="text-wedding-burgundy font-serif-wedding italic">Jaar (Neighbor)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Personal Message Text Area -->
+                    <div>
+                        <label for="messageBody" class="block text-sm font-medium text-wedding-burgundy mb-1">
+                            Fariintaada Hambalyada / Message <span class="text-wedding-gold">*</span>
+                        </label>
+                        <textarea id="messageBody" required rows="4" maxlength="500"
+                            class="w-full px-4 py-2.5 rounded-lg border border-wedding-gold/30 bg-wedding-ivory/50 focus:border-wedding-burgundy focus:ring-1 focus:ring-wedding-burgundy outline-none transition-all duration-200 resize-none font-serif-wedding italic text-lg leading-relaxed text-wedding-charcoal"
+                            placeholder="Ku qor halkan hambalyadaada quruxda badan ee ku socota lamaanaha... (M.a, Hambalyo!)"
+                            oninput="updateCharCount()"></textarea>
+                        <div class="flex justify-end mt-1">
+                            <span id="charCount" class="text-xs text-wedding-charcoal/50">0 / 500 ka haray</span>
+                        </div>
+                    </div>
+
+                    <!-- Custom Sparkle decoration for button -->
+                    <div class="pt-2">
+                        <button type="submit" id="submitBtn"
+                            class="w-full bg-gradient-to-r from-wedding-burgundy to-wedding-burgundyLight hover:from-wedding-burgundyLight hover:to-wedding-burgundy text-white font-medium py-3 px-6 rounded-lg shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2 group">
+                            <i class="fa-solid fa-envelope-open-text text-wedding-gold group-hover:scale-110 transition-transform"></i>
+                            <span>U soo Dir Hambalyada (Post Message)</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Bottom Signature Line -->
+                <div class="mt-8 border-t border-wedding-gold/10 pt-4 flex justify-between items-center text-xs text-wedding-charcoal/40">
+                    <span>* Diyaarinta dhabta ah</span>
+                    <span class="font-serif-wedding italic text-wedding-gold">Hambalyo arooska farxada leh!</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="w-full lg:w-7/12 flex flex-col gap-6">
+            
+            <!-- Quick search & category filter row -->
+            <div class="bg-[#FCFAF2] rounded-xl border border-wedding-gold/20 p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+                
+                <!-- Category Filters (Visual badging) -->
+                <div class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none" id="filterBar">
+                    <button onclick="filterWall('all')" class="filter-btn active-filter px-3 py-1.5 rounded-full text-xs font-serif-wedding italic border border-wedding-gold text-white bg-wedding-burgundy hover:bg-wedding-burgundyLight transition-all">
+                        Dhamaan (All)
+                    </button>
+                    <button onclick="filterWall('Waalid')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-serif-wedding italic border border-wedding-gold/30 text-wedding-burgundy hover:bg-wedding-gold/10 transition-all">
+                        Waalid
+                    </button>
+                    <button onclick="filterWall('Walaal')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-serif-wedding italic border border-wedding-gold/30 text-wedding-burgundy hover:bg-wedding-gold/10 transition-all">
+                        Walaal
+                    </button>
+                    <button onclick="filterWall('Saaxiib')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-serif-wedding italic border border-wedding-gold/30 text-wedding-burgundy hover:bg-wedding-gold/10 transition-all">
+                        Saaxiib
+                    </button>
+                    <button onclick="filterWall('Xiriir')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-serif-wedding italic border border-wedding-gold/30 text-wedding-burgundy hover:bg-wedding-gold/10 transition-all">
+                        Ehel
+                    </button>
+                    <button onclick="filterWall('Macallin')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-serif-wedding italic border border-wedding-gold/30 text-wedding-burgundy hover:bg-wedding-gold/10 transition-all">
+                        Macallin
+                    </button>
+                    <button onclick="filterWall('Jaar')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-serif-wedding italic border border-wedding-gold/30 text-wedding-burgundy hover:bg-wedding-gold/10 transition-all">
+                        Jaar
+                    </button>
+                </div>
+
+                <!-- Live Counter & Search Bar -->
+                <div class="flex items-center gap-2 shrink-0">
+                    <div class="relative w-full max-w-[180px]">
+                        <input type="text" id="wallSearch" oninput="handleSearch(this.value)" placeholder="Raadi fariin..."
+                            class="w-full pl-8 pr-3 py-1.5 rounded-lg border border-wedding-gold/30 text-xs bg-wedding-ivory focus:border-wedding-burgundy outline-none">
+                        <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-wedding-gold text-[10px]"></i>
+                    </div>
+                    <div class="bg-wedding-burgundy/5 border border-wedding-gold/30 px-3 py-1.5 rounded-lg text-xs font-serif-wedding italic font-semibold text-wedding-burgundy">
+                        <span id="messageCounter">0</span> Fariimood
+                    </div>
+                </div>
+            </div>
+
+            <div id="messagesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Message Cards will be generated dynamically -->
+                
+                <!-- Loading State placeholder -->
+                <div id="loadingState" class="col-span-full py-16 flex flex-col items-center justify-center text-center">
+                    <div class="w-12 h-12 border-4 border-wedding-gold border-t-wedding-burgundy rounded-full animate-spin mb-4"></div>
+                    <p class="font-serif-wedding italic text-wedding-burgundy text-lg">Soo bandhigaya derbiga hambalyada...</p>
+                    <p class="text-xs text-wedding-charcoal/50 mt-1">Waxaa la isku xirayaa realtime server.</p>
+                </div>
+
+                <!-- Empty State placeholder -->
+                <div id="emptyState" class="hidden col-span-full py-16 px-6 bg-[#FCFAF2] rounded-2xl border-2 border-dashed border-wedding-gold/30 text-center">
+                    <div class="w-16 h-16 rounded-full bg-wedding-burgundy/5 flex items-center justify-center mx-auto mb-4 text-wedding-gold border border-wedding-gold/40">
+                        <i class="fa-solid fa-heart-pulse text-2xl"></i>
+                    </div>
+                    <h3 class="font-serif-wedding text-xl font-medium text-wedding-burgundy">Muuqaalka weli waa faaruq</h3>
+                    <p class="text-sm text-wedding-charcoal/70 mt-1 max-w-sm mx-auto">Noqo qofka ugu horeeya ee u reeba fariinta ugu quruxda badan lamaanaha meherka/arooska leh!</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="customToast" class="fixed bottom-6 right-6 z-50 transform translate-y-12 opacity-0 pointer-events-none transition-all duration-300 max-w-md w-full px-4 sm:px-0">
+        <div class="bg-[#FCFAF2] border-2 border-wedding-gold rounded-xl p-4 shadow-xl flex items-start gap-3">
+            <div class="w-8 h-8 rounded-full bg-[#5C061C]/5 flex items-center justify-center text-wedding-gold border border-wedding-gold/40 shrink-0">
+                <i class="fa-solid fa-bell text-sm" id="toastIcon"></i>
+            </div>
+            <div class="flex-grow">
+                <h4 class="font-serif-wedding text-md font-semibold text-wedding-burgundy" id="toastTitle">Ogeysiis</h4>
+                <p class="text-xs text-wedding-charcoal/80 mt-1" id="toastMsg"></p>
+            </div>
+            <button onclick="dismissToast()" class="text-wedding-charcoal/40 hover:text-wedding-burgundy shrink-0">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+        </div>
+    </div>
+
+    <footer class="mt-auto border-t border-wedding-gold/20 bg-wedding-ivory/80 py-8 relative overflow-hidden">
+        <!-- Leaf vectors left/right background elements for aesthetics -->
+        <div class="absolute bottom-0 left-0 w-24 h-24 text-wedding-gold/10 pointer-events-none">
+            <svg class="w-full h-full" viewBox="0 0 100 100" fill="currentColor">
+                <path d="M0,100 C20,80 40,85 50,100 M0,100 C10,60 50,50 80,100 M0,100 C30,70 60,80 100,100" stroke="currentColor" stroke-width="2" fill="none"/>
+            </svg>
+        </div>
+        <div class="absolute bottom-0 right-0 w-24 h-24 text-wedding-gold/10 pointer-events-none scale-x-[-1]">
+            <svg class="w-full h-full" viewBox="0 0 100 100" fill="currentColor">
+                <path d="M0,100 C20,80 40,85 50,100 M0,100 C10,60 50,50 80,100 M0,100 C30,70 60,80 100,100" stroke="currentColor" stroke-width="2" fill="none"/>
+            </svg>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 text-center relative z-10">
+            <div class="flex justify-center items-center gap-2 text-wedding-gold text-lg mb-2">
+                <i class="fa-solid fa-dove"></i>
+                <span class="font-serif-wedding italic tracking-wider">Hambalyo Arooska Lamaanaha Farxada Leh</span>
+                <i class="fa-solid fa-dove"></i>
+            </div>
+            <p class="text-xs text-wedding-charcoal/50 max-w-md mx-auto">
+                "Uunka Illaahay waa isku lammaaneyay ee guurkooda ka dhig kii barako iyo jacayl ku waara."
+            </p>
+            <div class="mt-4 flex justify-center gap-4 text-[11px] text-wedding-burgundy font-medium">
+                <span>Ma jiro diiwaangelin loo baahan yahay</span>
+                <span>•</span>
+                <span>Realtime Updates</span>
+                <span>•</span>
+                <span>Persistent Memory</span>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, updateDoc, collection, query, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global state and configurations
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'hambalyo-digital-wedding';
+        let db = null;
+        let auth = null;
+        let user = null;
+        let allMessages = [];
+        let activeFilter = 'all';
+        let currentSearchQuery = '';
+        let isFirebaseActive = false;
+
+        // In-memory fallback dataset for smooth initial or offline loading
+        let fallbackMemory = [
+            {
+                id: 'mock-1',
+                guestName: 'Waalid Maxamed',
+                relationship: 'Waalid',
+                messageBody: 'Duco iyo farxad ayaan idiin rajeynayaa caruurtayda. Reerkiina ha noqdo kii nabad iyo is-afgarad ku badhaadha. Guuleysta marna ha isku cadhoonina dantaadu waa wadajirka!',
+                loves: 12,
+                createdAt: Date.now() - 3600000 * 4
+            },
+            {
+                id: 'mock-2',
+                guestName: 'Xaliimo Nuur',
+                relationship: 'Walaal',
+                messageBody: 'Hambalyo walaalkeyga qaaliga ah iyo dumaashideyda quruxda badan! Aad ayaan idinkugu faraxsanahay maanta. Eebe ha idiin barakeeyo reerkiina cusub!',
+                loves: 8,
+                createdAt: Date.now() - 3600000 * 2
+            },
+            {
+                id: 'mock-3',
+                guestName: 'Abdifatah Farah',
+                relationship: 'Saaxiib',
+                messageBody: 'Sxb dhab ah! Hambalyo arooska weyn! Ugu dambeyntii guurkii aad ku hamiyaysay waa kaa rumoobay maanta. Nolosha cusub ee guurka ee barakeysan ku raaxaysta.',
+                loves: 15,
+                createdAt: Date.now() - 1800000
+            }
+        ];
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            let firebaseConfig = null;
+            
+            try {
+                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                    firebaseConfig = JSON.parse(__firebase_config);
+                }
+            } catch (e) {
+                console.warn("Failed to parse firebase config, using offline emulation instead", e);
+            }
+
+            if (firebaseConfig) {
+                try {
+                    const app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+
+                    // Authentication Step (Rule 3)
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        const cred = await signInWithCustomToken(auth, __initial_auth_token);
+                        user = cred.user;
+                    } else {
+                        const cred = await signInAnonymously(auth);
+                        user = cred.user;
+                    }
+
+                    if (user) {
+                        isFirebaseActive = true;
+                        showNotification("Way guuleysatay!", "Waa laguu xiriiriyay server-ka hambalyada.", "fa-solid fa-wifi text-emerald-600");
+                        listenForMessages();
+                    } else {
+                        throw new Error("Unable to establish anonymous session.");
+                    }
+                } catch (err) {
+                    console.error("Firestore connection failed. Running on elegant Offline Emulation.", err);
+                    runFallbackSimulation();
+                }
+            } else {
+                console.log("No Firebase configurations provided. Utilizing local in-memory storage.");
+                runFallbackSimulation();
+            }
+
+            // Expose triggers globally
+            window.handlePostMessage = handlePostMessage;
+            window.filterWall = filterWall;
+            window.handleSearch = handleSearch;
+            window.likeMessage = likeMessage;
+            window.dismissToast = dismissToast;
+        });
+
+        function listenForMessages() {
+            if (!isFirebaseActive || !user) return;
+
+            // Rule 1: Strict paths for public collaborative data
+            const messagesColRef = collection(db, 'artifacts', appId, 'public', 'data', 'messages');
+            
+            // Rule 2: Fetch all data without complex where() / orderBy() query, then filter/sort in JS memory
+            onSnapshot(messagesColRef, (snapshot) => {
+                const fetched = [];
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    fetched.push({
+                        id: doc.id,
+                        ...data
+                    });
+                });
+                
+                // Sort in memory (Rule 2 requirement)
+                fetched.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                allMessages = fetched;
+                
+                renderMessages();
+            }, (error) => {
+                console.error("Error in Firebase snapshot updates:", error);
+                showNotification("Cillad Server", "Fariimaha si toos ah looma cusboonaysiin karo haatan.", "fa-solid fa-triangle-exclamation text-amber-500");
+            });
+        }
+
+        function runFallbackSimulation() {
+            isFirebaseActive = false;
+            allMessages = [...fallbackMemory].sort((a, b) => b.createdAt - a.createdAt);
+            renderMessages();
+            showNotification("Hab-Madaxbannaan", "Waxaad ku jirtaa habka offline-ka. Fariimaha halkan ayay ku kaydsanaan doonaan nolosha kulanka hadda.", "fa-solid fa-circle-info text-amber-600");
+        }
+
+        async function handlePostMessage(event) {
+            event.preventDefault();
+            
+            const nameInput = document.getElementById('guestName');
+            const messageInput = document.getElementById('messageBody');
+            const relInput = document.querySelector('input[name="relationship"]:checked');
+
+            if (!nameInput.value.trim() || !messageInput.value.trim() || !relInput) {
+                showNotification("Buuxi Dhamaan", "Fadlan buuxi magacaaga, xiriirka iyo fariinta.", "fa-solid fa-circle-exclamation text-amber-500");
+                return;
+            }
+
+            const payload = {
+                guestName: nameInput.value.trim(),
+                relationship: relInput.value,
+                messageBody: messageInput.value.trim(),
+                loves: 0,
+                createdAt: Date.now()
+            };
+
+            // Disable submit button temporarily
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-75');
+
+            try {
+                if (isFirebaseActive && user) {
+                    // Strict Paths: RULE 1
+                    const newMessageDocRef = doc(collection(db, 'artifacts', appId, 'public', 'data', 'messages'));
+                    await setDoc(newMessageDocRef, payload);
+                } else {
+                    // Fallback to memory
+                    const mockId = 'local-' + Date.now();
+                    payload.id = mockId;
+                    allMessages.unshift(payload);
+                    renderMessages();
+                }
+
+                // Sparkle animation
+                triggerConfetti();
+
+                // Custom celebratory sound
+                playChimeSound();
+
+                showNotification("Hambalyo Waa La Diray!", "Fariintaada waa lagu daray derbiga guud.", "fa-solid fa-wand-magic-sparkles text-wedding-gold");
+
+                // Clear input form
+                nameInput.value = '';
+                messageInput.value = '';
+                if (relInput) relInput.checked = false;
+                // Reset styling borders
+                document.querySelectorAll('input[name="relationship"]').forEach(radio => {
+                    radio.parentElement.classList.remove('bg-wedding-burgundy', 'text-white', 'border-wedding-burgundy');
+                    radio.parentElement.classList.add('border-wedding-gold/30');
+                    radio.parentElement.querySelector('span').classList.remove('text-white');
+                    radio.parentElement.querySelector('span').classList.add('text-wedding-burgundy');
+                });
+                document.getElementById('charCount').textContent = "0 / 500 ka haray";
+
+            } catch (err) {
+                console.error("Posting message error:", err);
+                showNotification("Cillad Diris", "Fariinta lama gudbin karo fadlan mar kale isku day.", "fa-solid fa-circle-xmark text-red-600");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-75');
+            }
+        }
+
+        async function likeMessage(id) {
+            // Visual micro-pop for target heart
+            const heartIcon = document.getElementById(`heart-icon-${id}`);
+            const countSpan = document.getElementById(`heart-count-${id}`);
+            if (heartIcon) {
+                heartIcon.classList.add('scale-150', 'text-red-600');
+                setTimeout(() => heartIcon.classList.remove('scale-150'), 200);
+            }
+
+            try {
+                if (isFirebaseActive && user) {
+                    // Transactional safety increment (RULE 1 Path)
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'messages', id);
+                    await runTransaction(db, async (transaction) => {
+                        const sfDoc = await transaction.get(docRef);
+                        if (!sfDoc.exists()) {
+                            throw "Document does not exist!";
+                        }
+                        const newLoves = (sfDoc.data().loves || 0) + 1;
+                        transaction.update(docRef, { loves: newLoves });
+                    });
+                } else {
+                    const found = allMessages.find(m => m.id === id);
+                    if (found) {
+                        found.loves = (found.loves || 0) + 1;
+                        if (countSpan) countSpan.textContent = found.loves;
+                    }
+                }
+                playClickSpark();
+            } catch (err) {
+                console.error("Liking failed:", err);
+            }
+        }
+
+        function filterWall(relationship) {
+            activeFilter = relationship;
+            
+            // Adjust active CSS states of tags
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('active-filter', 'bg-wedding-burgundy', 'text-white');
+                btn.classList.add('border-wedding-gold/30', 'text-wedding-burgundy');
+                btn.removeAttribute('style');
+            });
+
+            // Set current target
+            event.target.classList.add('active-filter', 'bg-wedding-burgundy', 'text-white');
+            event.target.classList.remove('border-wedding-gold/30', 'text-wedding-burgundy');
+
+            renderMessages();
+        }
+
+        function handleSearch(val) {
+            currentSearchQuery = val.toLowerCase().trim();
+            renderMessages();
+        }
+
+        function renderMessages() {
+            const container = document.getElementById('messagesContainer');
+            const loading = document.getElementById('loadingState');
+            const empty = document.getElementById('emptyState');
+
+            if (loading) loading.classList.add('hidden');
+
+            // Apply both tags and query matching
+            const filtered = allMessages.filter(msg => {
+                const matchesTag = (activeFilter === 'all' || msg.relationship === activeFilter);
+                const matchesSearch = (
+                    msg.guestName.toLowerCase().includes(currentSearchQuery) ||
+                    msg.messageBody.toLowerCase().includes(currentSearchQuery)
+                );
+                return matchesTag && matchesSearch;
+            });
+
+            // Update Counter UI
+            document.getElementById('messageCounter').textContent = filtered.length;
+
+            // Remove previous dynamically-created cards safely
+            const cards = container.querySelectorAll('.message-card');
+            cards.forEach(card => card.remove());
+
+            if (filtered.length === 0) {
+                empty.classList.remove('hidden');
+                return;
+            } else {
+                empty.classList.add('hidden');
+            }
+
+            filtered.forEach(msg => {
+                // Generate elegant dynamic stationery card element
+                const cardDiv = document.createElement('div');
+                cardDiv.className = `message-card card-stationery rounded-xl border border-wedding-gold/25 p-5 relative overflow-hidden transition-all duration-300 transform hover:-translate-y-1 hover:shadow-md flex flex-col justify-between`;
+                
+                // Set relationship tag style
+                const tagColorMap = {
+                    'Waalid': 'border-rose-400 bg-rose-50/50 text-rose-700',
+                    'Walaal': 'border-purple-300 bg-purple-50/50 text-purple-700',
+                    'Saaxiib': 'border-emerald-300 bg-emerald-50/50 text-emerald-700',
+                    'Xiriir': 'border-cyan-300 bg-cyan-50/50 text-cyan-700',
+                    'Macallin': 'border-amber-400 bg-amber-50/50 text-amber-700',
+                    'Jaar': 'border-blue-300 bg-blue-50/50 text-blue-700'
+                };
+                const badgeClass = tagColorMap[msg.relationship] || 'border-wedding-gold bg-wedding-ivory text-wedding-burgundy';
+
+                // Display dynamic beautiful corner leaves inside each card
+                cardDiv.innerHTML = `
+                    <div>
+                        <!-- Stationery Floral Corner Element -->
+                        <div class="absolute top-0 right-0 w-8 h-8 opacity-10 pointer-events-none">
+                            <svg class="w-full h-full text-wedding-gold" viewBox="0 0 100 100" fill="currentColor">
+                                <path d="M100,0 L100,50 C80,40 60,40 50,0 Z"/>
+                            </svg>
+                        </div>
+
+                        <!-- Top row info -->
+                        <div class="flex items-center justify-between mb-3.5">
+                            <span class="text-[10px] tracking-wider uppercase font-medium text-wedding-charcoal/40 font-sans-wedding">
+                                ${formatRelativeTime(msg.createdAt)}
+                            </span>
+                            <span class="px-2.5 py-0.5 rounded-full border ${badgeClass} text-[10px] font-serif-wedding font-semibold tracking-wide shadow-sm">
+                                ${msg.relationship}
+                            </span>
+                        </div>
+
+                        <!-- Message Body with delicate quotation decoration -->
+                        <p class="font-serif-wedding italic text-wedding-charcoal text-lg leading-relaxed mb-4 relative z-10 pl-2">
+                            "${escapeHTML(msg.messageBody)}"
+                        </p>
+                    </div>
+
+                    <!-- Card Footer (Sender name & Like actions) -->
+                    <div class="border-t border-wedding-gold/10 pt-3 flex items-center justify-between relative z-10">
+                        <div class="flex flex-col">
+                            <span class="font-serif-wedding text-wedding-burgundy font-bold italic text-md leading-none">
+                                — ${escapeHTML(msg.guestName)}
+                            </span>
+                            <span class="text-[9px] text-wedding-charcoal/40 mt-1 uppercase font-semibold">Qoraaga Hambalyada</span>
+                        </div>
+
+                        <!-- Love Heart Reactions Trigger -->
+                        <button onclick="likeMessage('${msg.id}')" 
+                                class="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-rose-100 hover:border-rose-300 bg-rose-50/20 hover:bg-rose-50/60 transition-all text-rose-600 text-xs shadow-sm">
+                            <i id="heart-icon-${msg.id}" class="fa-solid fa-heart transition-transform"></i>
+                            <span id="heart-count-${msg.id}" class="font-sans-wedding font-semibold">${msg.loves || 0}</span>
+                        </button>
+                    </div>
+                `;
+
+                container.appendChild(cardDiv);
+            });
+        }
+
+        function formatRelativeTime(timestamp) {
+            if (!timestamp) return 'Hadda';
+            const diff = Date.now() - timestamp;
+            const mins = Math.floor(diff / 60000);
+            if (mins < 1) return 'Hadda';
+            if (mins < 60) return `${mins}m ka hor`;
+            const hours = Math.floor(mins / 60);
+            if (hours < 24) return `${hours}wq ka hor`;
+            const days = Math.floor(hours / 24);
+            return `${days} maalin ka hor`;
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
+
+        function triggerConfetti() {
+            try {
+                confetti({
+                    particleCount: 120,
+                    spread: 75,
+                    origin: { y: 0.65 },
+                    colors: ['#D4AF37', '#5C061C', '#E5D3B3', '#800020']
+                });
+            } catch (err) {
+                console.warn("Confetti call bypassed:", err);
+            }
+        }
+    </script>
+
+    <script>
+        let isAudioPlaying = false;
+        let polySynth = null;
+        let ambientLoopId = null;
+        let delayEffect = null;
+        let reverbEffect = null;
+
+        // Custom highlight indicator for relationship badges
+        function updateTagHighlight(radioInput) {
+            // Reset others
+            document.querySelectorAll('input[name="relationship"]').forEach(radio => {
+                radio.parentElement.classList.remove('bg-wedding-burgundy', 'text-white', 'border-wedding-burgundy');
+                radio.parentElement.classList.add('border-wedding-gold/30');
+                radio.parentElement.querySelector('span').classList.remove('text-white');
+                radio.parentElement.querySelector('span').classList.add('text-wedding-burgundy');
+            });
+
+            // Highlight selected
+            if (radioInput.checked) {
+                radioInput.parentElement.classList.remove('border-wedding-gold/30');
+                radioInput.parentElement.classList.add('bg-wedding-burgundy', 'border-wedding-burgundy');
+                radioInput.parentElement.querySelector('span').classList.add('text-white');
+                radioInput.parentElement.querySelector('span').classList.remove('text-wedding-burgundy');
+            }
+        }
+
+        // Character counter tracking
+        function updateCharCount() {
+            const textarea = document.getElementById('messageBody');
+            const counter = document.getElementById('charCount');
+            const length = textarea.value.length;
+            counter.textContent = `${length} / 500 ka haray`;
+        }
+
+        async function toggleAmbience() {
+            const btnText = document.getElementById('ambientText');
+            const btnIcon = document.querySelector('#ambientBtn i');
+
+            // Audio Context Activation Safeguard
+            if (Tone.context.state !== 'running') {
+                await Tone.start();
+            }
+
+            if (isAudioPlaying) {
+                // Pause Ambience
+                Tone.Transport.stop();
+                btnText.textContent = "Muusig Shid (Play Ambience)";
+                btnIcon.className = "fa-solid fa-music text-wedding-gold";
+                isAudioPlaying = false;
+            } else {
+                // Start Procedural Synthesis
+                initializeWeddingMusic();
+                Tone.Transport.start();
+                btnText.textContent = "Jooji Muusigga (Stop)";
+                btnIcon.className = "fa-solid fa-circle-notch text-wedding-gold animate-spin";
+                isAudioPlaying = true;
+            }
+        }
+
+        function initializeWeddingMusic() {
+            if (polySynth) return; // Prevent double creation
+
+            // Warm delay and deep soft space reverb for romantic atmosphere
+            delayEffect = new Tone.FeedbackDelay("4n.", 0.5).toDestination();
+            reverbEffect = new Tone.Reverb({ roomSize: 0.8, wet: 0.4 }).toDestination();
+
+            // Create sweet synthesizer approximating warm vintage piano/harp
+            polySynth = new Tone.PolySynth(Tone.Synth, {
+                oscillator: {
+                    type: "triangle"
+                },
+                envelope: {
+                    attack: 0.15,
+                    decay: 0.8,
+                    sustain: 0.4,
+                    release: 1.5
+                }
+            }).chain(delayEffect, reverbEffect);
+
+            // Soft master volume limiting
+            polySynth.volume.value = -12;
+
+            // Beautiful romantic key harmonic loops (C Major / A Minor celestial pentatonic)
+            const chords = [
+                ["C4", "E4", "G4", "B4"],  // Cmaj7
+                ["A3", "C4", "E4", "G4"],  // Am7
+                ["F3", "A3", "C4", "E4"],  // Fmaj7
+                ["G3", "B3", "D4", "G4"]   // G Major
+            ];
+            
+            let chordIndex = 0;
+
+            // Sequence to play gentle arpeggios
+            ambientLoopId = Tone.Transport.scheduleRepeat((time) => {
+                const currentChord = chords[chordIndex];
+                
+                // Play chord gently across the bar
+                currentChord.forEach((note, i) => {
+                    const offset = i * 0.25; // elegant arpeggiation delay
+                    polySynth.triggerAttackRelease(note, "2n", time + offset);
+                });
+
+                chordIndex = (chordIndex + 1) % chords.length;
+            }, "4m");
+        }
+
+        // Beautiful sparkling chime trigger upon message submit
+        function playChimeSound() {
+            if (!polySynth) return;
+            const now = Tone.now();
+            polySynth.triggerAttackRelease("C5", "8n", now);
+            polySynth.triggerAttackRelease("E5", "8n", now + 0.1);
+            polySynth.triggerAttackRelease("G5", "8n", now + 0.2);
+            polySynth.triggerAttackRelease("C6", "4n", now + 0.3);
+        }
+
+        // Tiny touch click sound for Reacting
+        function playClickSpark() {
+            if (!polySynth) return;
+            polySynth.triggerAttackRelease("G5", "16n", Tone.now());
+        }
+
+        let toastTimeout = null;
+
+        function showNotification(title, message, iconClass = "fa-solid fa-bell text-wedding-gold") {
+            const toast = document.getElementById('customToast');
+            const tTitle = document.getElementById('toastTitle');
+            const tMsg = document.getElementById('toastMsg');
+            const tIcon = document.getElementById('toastIcon');
+
+            // Apply fields
+            tTitle.textContent = title;
+            tMsg.textContent = message;
+            tIcon.className = iconClass;
+
+            // Reveal slide transition
+            toast.classList.remove('translate-y-12', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            if (toastTimeout) clearTimeout(toastTimeout);
+            
+            toastTimeout = setTimeout(() => {
+                dismissToast();
+            }, 6000);
+        }
+
+        function dismissToast() {
+            const toast = document.getElementById('customToast');
+            toast.classList.remove('translate-y-0', 'opacity-100');
+            toast.classList.add('translate-y-12', 'opacity-0', 'pointer-events-none');
+        }
+    </script>
 </body>
 </html>
